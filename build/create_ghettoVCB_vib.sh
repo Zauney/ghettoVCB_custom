@@ -4,7 +4,7 @@
 # Script to build ghettoVCB VIB using VIB Author (can use with lamw/vibauthor Docker Container)
 
 GVCB_REPO=https://github.com/Zauney/ghettoVCB_custom.git
-GVCB_REPO_DIR=ghettoVCB
+GVCB_REPO_DIR=ghettoVCB_custom
 GVCB_TEMP_DIR=/tmp/ghettoVCB-$$
 
 # Ensure git is installed
