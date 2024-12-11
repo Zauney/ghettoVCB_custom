@@ -836,27 +836,32 @@ powerOff() {
     ${VMWARE_CMD} vmsvc/power.shutdown ${VM_ID} > /dev/null 2>&1
     while ${VMWARE_CMD} vmsvc/power.getstate ${VM_ID} | grep -i "Powered on" > /dev/null 2>&1; do
         #enable hard power off code
-        if [[ ${ENABLE_HARD_POWER_OFF} -eq 1 ]] ; then
-            if [[ ${START_ITERATION} -ge ${ITER_TO_WAIT_SHUTDOWN} ]] ; then
-                logger "info" "Hard power off occured for ${VM_NAME}, waited for $((ITER_TO_WAIT_SHUTDOWN*60)) seconds"
-                ${VMWARE_CMD} vmsvc/power.off ${VM_ID} > /dev/null 2>&1
-                #this is needed for ESXi, even the hard power off did not take affect right away
-                sleep 60
-                break
-            fi
-        fi
+        # if [[ ${ENABLE_HARD_POWER_OFF} -eq 1 ]] ; then
+        #     if [[ ${START_ITERATION} -ge ${ITER_TO_WAIT_SHUTDOWN} ]] ; then
+        #         logger "info" "Hard power off occured for ${VM_NAME}, waited for $((ITER_TO_WAIT_SHUTDOWN*60)) seconds"
+        #         ${VMWARE_CMD} vmsvc/power.off ${VM_ID} > /dev/null 2>&1
+        #         #this is needed for ESXi, even the hard power off did not take affect right away
+        #         sleep 60
+        #         break
+        #     fi
+        # fi
 
-        logger "info" "VM is still on - Iteration: ${START_ITERATION} - sleeping for 60secs (Duration: $((START_ITERATION*60)) seconds)"
-        sleep 60
+        # logger "info" "VM is still on - Iteration: ${START_ITERATION} - sleeping for 60secs (Duration: $((START_ITERATION*60)) seconds)"
+        logger "info" "VM is still on - Ignoring ${VM_NAME} for backup!"
+        # sleep 60
+
+        POWER_OFF_EC=1
+        break
 
         #logic to not backup this VM if unable to shutdown
         #after certain timeout period
-        if [[ ${START_ITERATION} -ge ${POWER_DOWN_TIMEOUT} ]] ; then
-            logger "info" "Unable to power off ${VM_NAME}, waited for $((POWER_DOWN_TIMEOUT*60)) seconds! Ignoring ${VM_NAME} for backup!"
-            POWER_OFF_EC=1
-            break
-        fi
-        START_ITERATION=$((START_ITERATION + 1))
+        # if [[ ${START_ITERATION} -ge ${POWER_DOWN_TIMEOUT} ]] ; then
+        #     logger "info" "Unable to power off ${VM_NAME}, waited for $((POWER_DOWN_TIMEOUT*60)) seconds! Ignoring ${VM_NAME} for backup!"
+        #     POWER_OFF_EC=1
+        #     break
+        # fi
+        # START_ITERATION=$((START_ITERATION + 1))
+
     done
     if [[ ${POWER_OFF_EC} -eq 0 ]] ; then
         logger "info" "VM is powerdOff"
